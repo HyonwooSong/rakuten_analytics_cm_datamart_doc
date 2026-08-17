@@ -1,6 +1,6 @@
 # RA_CM Design Overview
 
-*Last updated: 2026-08-17 13:53 JST — 初版。*
+*Last updated: 2026-08-17 14:28 JST — § 2-4（命名進化の履歴）を削除*
 
 CM Dashboard の `ra_cm_` **命名 3-layer view architecture** の概要。全体像、命名規則、Layer 1/2 の責務を扱う。
 
@@ -129,21 +129,6 @@ env（STG / PROD）は Databricks **catalog** で区別し、schema / view 名�
 - **1 category = 1 Layer 2 view** — 「P&G の日用品」用に `v_daily_necessities_main` 1 本
 - Dashboard 別に view を作らない — dashboard の filter/aggregation は SQL 側で定義
 
-
-
-### 2-4. 命名進化の履歴
-
-参考までに、命名は 6 世代の進化を経て現行に至った:
-
-
-| 世代                        | 例                                                          | 変更理由                                                              |
-| ------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------- |
-| ① 元祖                      | `cm_datamart_stg.v_pandg_sales_analysis_daily_necessities` | 初期案（shared schema + dashboard 名入り）                                |
-| ② dashboard 名削除           | `cm_datamart_stg.v_pandg_daily_necessities`                | dashboard 別 view は不要（SQL 側で差別化）                                   |
-| ③ per-client schema       | `cm_pandg_stg.v_daily_necessities`                         | client 別 GRANT を schema 単位に統一（1-shot / client）                    |
-| ④ env-less schema         | `cm_pandg.v_daily_necessities`                             | env 分離を catalog に集約、schema/view code を env 中立に                    |
-| ⑤ `ra_` prefix            | `ra_cm_pandg.v_daily_necessities`                          | Rakuten Analytics 所属を明示、Layer 0 (`cm_category_mart_*`) と識別        |
-| ⑥ **現行** — `_main` suffix | `ra_cm_pandg.v_daily_necessities_main`                     | 同一 category に将来 sibling view（例: `v_{category}_detail`）を追加できる余地を確保 |
 
 
 ---
