@@ -1,12 +1,10 @@
 # RA_CM Design Overview
 
-*Last updated: 2026-08-17 14:28 JST — § 2-4（命名進化の履歴）を削除*
+*Last updated: 2026-08-18 13:30 JST — §1 に column-level ER diagram (L0→L1→L2 lineage) を追加。詳細は [DESIGN_ER.md](DESIGN_ER.md) 参照。*
 
 CM Dashboard の `ra_cm_` **命名 3-layer view architecture** の概要。全体像、命名規則、Layer 1/2 の責務を扱う。
 
 ---
-
-
 
 ## 1. 全体像 — 3-Layer View Architecture
 
@@ -65,9 +63,59 @@ flowchart TB
 
 
 
-> **📌 重要**: Dashboard は **client 毎に別々**に作成される（Lakeview UI 上で client_id を跨がない）。P&G の dashboard は `ra_cm_pandg.v_`* のみ、Asahi Beer の dashboard は `ra_cm_asahi_beer.v_*` のみを参照。Schema 単位の GRANT がそのまま dashboard の可視範囲になる。
+> **📌 重要**: Dashboard は **client 毎に別々**に作成される（Lakeview UI 上で client_id を跨がない）。P&G の dashboard は `ra_cm_pandg.v_`* のみ、Asahi Beer の dashboard は `ra_cm_asahi_beer.v_`* のみを参照。Schema 単位の GRANT がそのまま dashboard の可視範囲になる。
 
+### Entity relationships (column level)
 
+上の flowchart は entity 単位の流れを示す。以下の ER diagram は同じ lineage を **column 単位** で表現し、L0 の key column と L1 で追加される 4 派生列を明示する。Column-level detail / 1 record 例 / 将来 JOIN 予定 master は [DESIGN_ER.md](DESIGN_ER.md) を参照。
+
+```mermaid
+erDiagram
+    L0_SOURCE ||--|| L1_MAIN         : "SELECT base.* + 4 derived"
+    L1_MAIN   ||--o{ L2_PANDG        : "WHERE maker_name='プロクター＆ギャンブル'"
+    L1_MAIN   ||--o{ L2_ASAHI_BEER   : "WHERE maker_name='アサヒビール'"
+    L1_MAIN   ||--o{ L2_KAO          : "WHERE maker_name='花王'"
+    L1_MAIN   ||--o{ L2_PANASONIC    : "WHERE maker_name='パナソニック'"
+    L1_MAIN   ||--o{ L2_LOREAL       : "WHERE maker_name='ロレアル'"
+
+    L0_SOURCE {
+        bigint  shop_id            "FK to future shop_master"
+        bigint  item_id
+        bigint  genre_id
+        string  item_name          "RLIKE input for selling_form_name"
+        string  ran_code           "JAN code"
+        date    reg_date
+        string  reg_year_month
+        bigint  price
+        bigint  units
+        bigint  sub_total_including_tax
+        bigint  easy_id            "0 for non-member"
+        bigint  unique_id          "distinct buyer incl. anon"
+        string  maker_name         "L2 partitioning key"
+        string  brand_name
+        string  sub_brand_name
+        string  sub_sub_brand_name
+        string  product_group_l1
+        string  shop_name
+        string  sale_type          "legacy 販売形態 (no USED/PARALLEL/OUTLET)"
+        string  use_device_code    "future FK to device_master (TBD)"
+        bigint  furusato_tax_flag
+    }
+
+    L1_MAIN {
+        inherit base_columns       "all L0 columns via base.*"
+        string  shop_group_name    "NEW · NULL placeholder"
+        string  selling_form_name  "NEW · item_name RLIKE → USED/PARALLEL/OUTLET/NORMAL"
+        string  os_name            "NEW · NULL placeholder"
+        string  app_type_name      "NEW · NULL placeholder"
+    }
+
+    L2_PANDG        { inherit l1_columns "SELECT * FROM L1 WHERE maker_name='プロクター＆ギャンブル'" }
+    L2_ASAHI_BEER   { inherit l1_columns "SELECT * FROM L1 WHERE maker_name='アサヒビール'" }
+    L2_KAO          { inherit l1_columns "SELECT * FROM L1 WHERE maker_name='花王'" }
+    L2_PANASONIC    { inherit l1_columns "SELECT * FROM L1 WHERE maker_name='パナソニック'" }
+    L2_LOREAL       { inherit l1_columns "SELECT * FROM L1 WHERE maker_name='ロレアル'" }
+```
 
 ### 各層の責務
 
@@ -75,18 +123,14 @@ flowchart TB
 | Layer         | Object                                | Owner                   | 責務                                                                                                              | Consumer      |
 | ------------- | ------------------------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------- | ------------- |
 | **Layer 0**   | 外部 source view                        | 別 team (Datamart / ETL) | Raw data + 基本 enrichment（既に多数の派生列済）                                                                             | Layer 1       |
-| **Layer 1**   | `ra_cm_datamart.v_{category}_main`    | CM Dashboard team       | **全 client 共通の enrichment 拠点** PoC 段階: `SELECT `* pass-through 将来: 外部 JOIN (shop_group, user_info, device_info) | Layer 2       |
+| **Layer 1**   | `ra_cm_datamart.v_{category}_main`    | CM Dashboard team       | **全 client 共通の enrichment 拠点** PoC 段階: `base.*` + 4 RMP-parity 派生列 (`shop_group_name` / `selling_form_name` / `os_name` / `app_type_name`) 将来: 外部 JOIN (shop_group, user_info, device_info) の実データを NULL placeholder に流し込む | Layer 2       |
 | **Layer 2**   | `ra_cm_{client_id}.v_{category}_main` | CM Dashboard team       | **client filter (**`WHERE maker_name = X`**) + 権限境界**                                                           | Dashboard SQL |
 | **Dashboard** | Lakeview widget dataset               | Dashboard designer      | UI parameter + 集計 (SUM, COUNT, GROUP BY)                                                                        | End user      |
 
 
 ---
 
-
-
 ## 2. 命名規則
-
-
 
 ### 2-1. 環境分離戦略 — **catalog level only**
 
@@ -107,8 +151,6 @@ env（STG / PROD）は Databricks **catalog** で区別し、schema / view 名�
 - SQL / dashboard code が env 中立になる
 - Placeholder `__CATALOG__` の解決だけで STG/PROD 対応
 
-
-
 ### 2-2. Schema prefix — `ra_cm_`
 
 
@@ -119,7 +161,7 @@ env（STG / PROD）は Databricks **catalog** で区別し、schema / view 名�
 | `{scope}` | `datamart`（Layer 1 共有）or `{client_id}`（Layer 2 per-client）                 |
 
 
-**なぜ** `ra_` **付き？**: Layer 0 source view の schema (`cm_category_mart_`* — 外部 owner) と識別。同じ Unity Catalog 内で複数チーム の `cm_*` 資産が混在しても衝突しない。
+**なぜ** `ra_` **付き？**: Layer 0 source view の schema (`cm_category_mart_`* — 外部 owner) と識別。同じ Unity Catalog 内で複数チーム の `cm_`* 資産が混在しても衝突しない。
 
 ### 2-3. View 名 — `v_{category}_main`
 
@@ -129,15 +171,9 @@ env（STG / PROD）は Databricks **catalog** で区別し、schema / view 名�
 - **1 category = 1 Layer 2 view** — 「P&G の日用品」用に `v_daily_necessities_main` 1 本
 - Dashboard 別に view を作らない — dashboard の filter/aggregation は SQL 側で定義
 
-
-
 ---
 
-
-
 ## 3. Layer 1 — Enriched Views（category-shared）
-
-
 
 ### 3-1. 目的
 
@@ -162,19 +198,13 @@ LEFT JOIN {tbd}.device_master d ON base.session_id = d.session_id;
 
 ---
 
-
-
 ## 4. Layer 2 — Client Wrapper Views（per-client）
-
-
 
 ### 4-1. 目的
 
 - **Client filter** (`WHERE maker_name = 'X'`) を集約
 - **権限境界** — GRANT SELECT ON SCHEMA `ra_cm_{client}` で client SP に一括付与（1-shot）
 - **Dashboard SQL の env / client 依存を最小化** — dashboard は Layer 2 view の schema/catalog を placeholder 化するだけ
-
-
 
 ### 4-2. DDL パターン
 
@@ -199,8 +229,6 @@ WHERE maker_name = 'プロクター＆ギャンブル';
 | **Scale-out** | 新 client 追加時に schema を CREATE するだけ、既存 client に影響なし                 |
 
 
-
-
 ### 4-4. Category × Client Matrix
 
 現時点で planned な (client, category) 組み合わせ:
@@ -213,4 +241,3 @@ WHERE maker_name = 'プロクター＆ギャンブル';
 
 
 各 category が sales_analysis / brand_distribution 等の **8+ 種類の dashboard** を持つ想定（PoC は sales_analysis のみ）。
-
