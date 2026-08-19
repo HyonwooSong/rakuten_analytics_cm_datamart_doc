@@ -7,6 +7,85 @@
 
 ---
 
+## ope_master_data — Full File List
+
+`rep-batch-data/ope_master_data/` contains all hand-maintained master TSVs loaded into the GATD pipeline.
+
+### Structure
+
+```
+ope_master_data/
+├── nsl/          ← 20 files (production master TSVs, loaded by batch)
+│   ├── nm201 〜 nm230, nm243  (active)
+│   └── nm027, nm028           (.abolished — 廃止)
+├── rd/
+│   └── dm003                  (yoridori choice filter, 55 rows)
+└── asl/
+    ├── hive/    ← ad004〜ad019 (10 files, Hive/BQ serving dims)
+    └── oracle/  ← ad004〜ad019 (10 files, Oracle/Tableau serving dims — same content)
+```
+
+**Total unique master files: 21 active (nsl) + 1 (rd/dm003) + 10 (asl dims) = 32 files**  
+(+ 2 abolished in nsl/ · + reporting-side `shop_groups/*.yml` in a separate Databricks ETL repo — not part of ope_master_data)
+
+---
+
+### nsl/ — NSL layer (contract & brand masters)
+
+| File | Table | Rows | Content |
+|---|---|---:|---|
+| `nm201_tbl_maker_master_v2.tsv` | nm201 | 499 | メーカーマスタ |
+| `nm202_tbl_product_brand_master_v2.tsv` | nm202 | 2,297 | 商品ブランドマスタ（管理対象＋競合） |
+| `nm203_tbl_product_master_v2.tsv` | nm203 | **99,708** | 商品マスタ（RANコード） |
+| `nm204_tbl_contracted_bu_master_v2.tsv` | nm204 | 19 | 契約BUマスタ（Tableau/RA アカウント、`process_type` 含む） |
+| `nm205_tbl_contracted_brand_master_v2.tsv` | nm205 | 214 | 契約ブランドマスタ（`rank_aggregation_period` 含む） |
+| `nm206_tbl_competing_brand_master_v2.tsv` | nm206 | 2,016 | 競合ブランドマスタ＋表示マスク（`brand_disp_name` / `maker_disp_name`） |
+| `nm207_tbl_product_group_master_v2.tsv` | nm207 | 564 | 商品グループ階層 |
+| `nm208_tbl_brand_layer_master_v2.tsv` | nm208 | **20,915** | ブランド層階層（brand/sub_brand/sub_sub_brand/RAN leaf、`layer_level_no` 1-4） |
+| `nm209_tbl_brand_loyalty_rank_master_v2.tsv` | nm209 | 4,704 | ロイヤルティランク閾値（MONETARY/REPEAT × L/M/H/ExH） |
+| `nm210_tbl_contract_product_brand_mapping_master.tsv` | nm210 | 307 | 契約ブランド × 商品ブランド対応 |
+| `nm218_tbl_brand_page_master_v2.tsv` | nm218 | 88 | ブランドページURL → brand_layer_id |
+| `nm219_tbl_device_master_v2.tsv` | nm219 | 12 | デバイスコード → `device_name` + **`os_name`** |
+| `nm220_tbl_page_class_master_v2.tsv` | nm220 | 5 | ページ分類（ドメイン/パスタイプ） |
+| `nm223_tbl_member_attribute_master_v2.tsv` | nm223 | 1,029 | 会員属性（年齢層/性別/都道府県） |
+| `nm225_tbl_service_master_v2.tsv` | nm225 | 1 | 楽天グループサービス分類 |
+| `nm226_tbl_selling_form_master_v2.tsv` | nm226 | 4 | 販売形態（中古/並行輸入/アウトレット/通常） |
+| `nm227_tbl_brand_layer_filterset_v2.tsv` | nm227 | 1,498 | brand_layer_id → filtersetcode（AnTARES） |
+| `nm228_tbl_brand_group_filterset_v2.tsv` | nm228 | 3,485 | (product_group_id, product_brand_id) → filtersetcode |
+| `nm230_tbl_brand_group_master_v2.tsv` | nm230 | 4,289 | 商品グループ × ブランド対応 |
+| `nm243_tbl_app_type_master_v2.tsv` | nm243 | 30 | アプリタイプ（Webアプリ等） |
+| ~~`nm027_tbl_brand_dict_master.tsv.abolished`~~ | nm027 | ~~9,311~~ | ⛔ 廃止 — 旧ブランド辞書マスタ |
+| ~~`nm028_tbl_brand_group_dict_master.tsv.abolished`~~ | nm028 | ~~15,850~~ | ⛔ 廃止 — 旧ブランドグループ辞書 |
+
+---
+
+### rd/ — RD layer
+
+| File | Table | Rows | Content |
+|---|---|---:|---|
+| `dm003_tbl_yoridori_choice_filter_master.tsv` | dm003 | 55 | よりどり choice 除外 regex パターン（set/yoridori 検出） |
+
+---
+
+### asl/hive/ and asl/oracle/ — ASL layer (serving dimension tables)
+
+Both folders contain identical files — `hive/` = Hive/BQ serving, `oracle/` = Oracle/Tableau serving.
+
+| File | Table | Rows | Content |
+|---|---|---:|---|
+| `ad004_tbl_age_gender.tsv` | ad004 | 27 | 年齢層 × 性別ディメンション |
+| `ad005_tbl_rakuten_rank.tsv` | ad005 | 7 | 楽天会員ランク（ダイヤ/プラチナ/ゴールド/シルバー/レギュラー…） |
+| `ad006_tbl_residence.tsv` | ad006 | 50 | 居住地（都道府県） |
+| `ad007_tbl_loyalty_rank.tsv` | ad007 | 6 | ロイヤルティランク区分（L/M/H/ExH + 非会員等） |
+| `ad008_tbl_new_repeat.tsv` | ad008 | 5 | 新規/スイッチ/リピート区分（1/2/3） |
+| `ad010_tbl_selling_form.tsv` | ad010 | 24 | 販売形態ディメンション（ASL版、nm226より詳細） |
+| `ad016_tbl_device.tsv` | ad016 | 3 | デバイス区分（PC/モバイル/…） |
+| `ad017_tbl_os.tsv` | ad017 | 3 | OS区分 |
+| `ad018_tbl_app_type.tsv` | ad018 | 3 | アプリタイプ区分 |
+| `ad019_tbl_traffic_class.tsv` | ad019 | 9 | トラフィック分類（流入元） |
+
+---
+
 ## Quick Reference — Origin File Summary
 
 | Focus area | Very origin file | Repo / layer | ope-master TSV? |
