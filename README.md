@@ -3,7 +3,7 @@
 Public reference documentation for the **RMPREP × CategoryMart (RA-CM)** migration project.
 
 > **Project:** [CONRAT-44285 [DS] RMPREP × CategoryMart](https://jira.rakuten-it.com/jira/browse/CONRAT-44285)  
-> **Owner:** Song, Hyon Woo (Erin / ECFD)
+> **Owner:** Song, Hyon Woo
 
 ---
 
@@ -25,7 +25,7 @@ Public reference documentation for the **RMPREP × CategoryMart (RA-CM)** migrat
 |---|---|---|
 | **AIO** | 佐藤 Shinjiro (Shinn) | Requirements, AIO SBX master authoring (monthly), numeric diff verification, dashboard update |
 | **DKD** | 小林 | AnTARES filter creation, filtersetcode issuance, Product Group additions (2–4 weeks) |
-| **GATD → ECFD** | 大西 → Erin | Production TSV update, validation, BQ load, pipeline execution |
+| **GATD/AMD** | 大西 | Production TSV update, validation, BQ load, pipeline execution |
 
 ---
 

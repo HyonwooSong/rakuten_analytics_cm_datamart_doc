@@ -34,7 +34,7 @@ flowchart TD
         PROD_TSV --> VALID
         VALID["バリデーション実行\nexe_nsl_ope_master_validation.sh\nFK整合性チェック全13マスタ"]
         VALID --> VALID_RESULT{全チェック PASS?\nAll checks passed?}
-        VALID_RESULT -->|❌ FAIL| FIX_TSV["TSV 修正\nFix TSV\n📌 AIO / ECFD"]
+        VALID_RESULT -->|❌ FAIL| FIX_TSV["TSV 修正\nFix TSV\n📌 AIO / GATD/AMD"]
         FIX_TSV --> VALID
         VALID_RESULT -->|✅ PASS| BQ
         BQ["BQ ロード実行\nexe_load_nsl_hive_ope_master_data.sh\nTSV → GCS → TRUNCATE → LOAD → 行数検証"]
@@ -42,7 +42,7 @@ flowchart TD
 
     BQ --> MAINT_TYPE
 
-    subgraph P3["🔄 Phase 3 — パイプライン再実行  ／  ECFD（Erin）"]
+    subgraph P3["🔄 Phase 3 — パイプライン再実行  ／  GATD/AMD"]
         MAINT_TYPE{操作種別\nOperation type}
         MAINT_TYPE -->|新規クライアント\nブランド定義変更\nNew client / brand change| M01
         MAINT_TYPE -->|四半期フル再集計\nQuarterly full re-agg| M03
@@ -56,8 +56,8 @@ flowchart TD
 
     PIPE_DONE --> QA_CHECK
 
-    subgraph P4["✅ Phase 4 — QA・ダッシュボード更新  ／  ECFD → AIO"]
-        QA_CHECK["集計結果品質チェック\nQuality check\n📌 ECFD → AIO に報告"]
+    subgraph P4["✅ Phase 4 — QA・ダッシュボード更新  ／  GATD/AMD → AIO"]
+        QA_CHECK["集計結果品質チェック\nQuality check\n📌 GATD/AMD → AIO に報告"]
         QA_CHECK --> DIFF{数値差分あり?\nNumeric diff found?}
         DIFF -->|Yes| CORRECT["修正指示 & 対応\nCorrection\n📌 AIO（佐藤）\n→ Phase 2 へ戻る"]
         CORRECT --> PROD_TSV
@@ -88,7 +88,7 @@ sequenceDiagram
     actor Client as クライアント<br/>Client
     actor AIO as AIO（佐藤）<br/>Sato-san
     actor DKD as DKD（小林）<br/>Kobayashi-san
-    actor ECFD as ECFD（Erin）
+    actor GATD as GATD/AMD
     participant SBX as SBX BQ<br/>spdb-sbx
     participant PROD as 本番 BQ<br/>Production BQ
     participant PIPE as Pipeline<br/>brand_maint
@@ -108,35 +108,35 @@ sequenceDiagram
 
     rect rgb(254, 249, 195)
         Note over AIO,PROD: Phase 2 — 本番マスタ反映
-        AIO->>ECFD: マスタ反映依頼<br/>Request production update
-        Note right of ECFD: deleteflg=1 の行を除外して<br/>本番 TSV に反映
-        ECFD->>PROD: バリデーション実行<br/>exe_nsl_ope_master_validation.sh
+        AIO->>GATD: マスタ反映依頼<br/>Request production update
+        Note right of GATD: deleteflg=1 の行を除外して<br/>本番 TSV に反映
+        GATD->>PROD: バリデーション実行<br/>exe_nsl_ope_master_validation.sh
         alt ❌ FAIL（FK整合性エラー）
-            PROD-->>ECFD: エラー詳細
-            ECFD->>AIO: 修正依頼
+            PROD-->>GATD: エラー詳細
+            GATD->>AIO: 修正依頼
             AIO->>SBX: SBX 修正
-            AIO->>ECFD: 修正完了報告
-            ECFD->>PROD: バリデーション再実行
+            AIO->>GATD: 修正完了報告
+            GATD->>PROD: バリデーション再実行
         end
-        PROD-->>ECFD: ✅ PASS
-        ECFD->>PROD: BQ ロード実行<br/>TSV→GCS→TRUNCATE→LOAD→行数検証
-        PROD-->>ECFD: ロード完了
+        PROD-->>GATD: ✅ PASS
+        GATD->>PROD: BQ ロード実行<br/>TSV→GCS→TRUNCATE→LOAD→行数検証
+        PROD-->>GATD: ロード完了
     end
 
     rect rgb(220, 252, 231)
-        Note over ECFD,PIPE: Phase 3 — パイプライン再実行
-        ECFD->>PIPE: brand_maint フロー手動実行<br/>（操作種別に応じて 01/03/04 を選択）
+        Note over GATD,PIPE: Phase 3 — パイプライン再実行
+        GATD->>PIPE: brand_maint フロー手動実行<br/>（操作種別に応じて 01/03/04 を選択）
         Note right of PIPE: nm233 / nt231 / ns215<br/>af021 / af013 / af026 再構築<br/>Oracle sqoop export
-        PIPE-->>ECFD: 実行完了
+        PIPE-->>GATD: 実行完了
     end
 
     rect rgb(250, 232, 255)
-        Note over ECFD,Client: Phase 4 — QA・ダッシュボード更新
-        ECFD->>AIO: 集計結果レポート<br/>Quality check report
+        Note over GATD,Client: Phase 4 — QA・ダッシュボード更新
+        GATD->>AIO: 集計結果レポート<br/>Quality check report
         AIO->>AIO: 数値差分確認
         alt 差分あり / Diff found
-            AIO->>ECFD: 修正指示
-            Note over ECFD,PROD: Phase 2 へ戻る
+            AIO->>GATD: 修正指示
+            Note over GATD,PROD: Phase 2 へ戻る
         end
         AIO->>AIO: Databricks ダッシュボード更新
         AIO-->>Client: 完了報告 / Completion report

@@ -1,7 +1,7 @@
 # CM Migration — Four Focus Areas: Origin File Deep-Dive
 
 > **Project:** CONRAT-44285 [DS] RMPREP × CategoryMart  
-> **Author:** Song, Hyon Woo (Erin)  
+> **Author:** Song, Hyon Woo  
 > **Date:** 2026-08-19  
 > **Purpose:** Trace each CM migration gap to its **very origin data file**, distinguish ope-master (hand-maintained TSV) vs. pipeline-computed vs. reporting-side YAML, and clarify what needs to be built/ported for CM.
 

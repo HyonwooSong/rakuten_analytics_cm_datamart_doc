@@ -2,7 +2,7 @@
 
 > **Source / 一次ソース:** [AIO 佐藤対応内容説明](https://confluence.rakuten-it.com/confluence/spaces/AIO/pages/6863144149/)  
 > **Project / プロジェクト:** [CONRAT-44285 [DS] RMPREP × CategoryMart](https://jira.rakuten-it.com/jira/browse/CONRAT-44285)  
-> **Owner:** Song, Hyon Woo (Erin / ECFD)
+> **Owner:** Song, Hyon Woo
 
 ---
 
@@ -18,7 +18,7 @@
 |---|---|---|
 | **AIO** | Sato, Shinjiro (Shinn) | Requirements spec check, filter spec decision, AIO SBX master authoring (monthly), numeric diff verification, dashboard update |
 | **DKD** | Kobayashi | AnTARES filter creation, filtersetcode issuance, Product Group additions |
-| **GATD → ECFD** | Onishi → Erin | Production TSV update, validation, BQ load, pipeline execution |
+| **GATD/AMD** | 大西 | Production TSV update, validation, BQ load, pipeline execution |
 
 ---
 
@@ -148,7 +148,7 @@ Per TSV: empty check → column count check → upload GCS
          → TRUNCATE → BQ LOAD → row count check
 ```
 
-### Phase 3 — Pipeline re-execution (GATD / ECFD)
+### Phase 3 — Pipeline re-execution (GATD/AMD)
 
 9. Trigger brand_maint flows manually:
    - `brand_maint_01` — new client / brand definition change (25-month re-aggregation)
@@ -157,7 +157,7 @@ Per TSV: empty check → column count check → upload GCS
 
 ### Phase 4 — QA and dashboard update
 
-10. GATD / ECFD checks aggregation results → reports to AIO
+10. GATD/AMD checks aggregation results → reports to AIO
 11. AIO verifies numeric diff, issues corrections if needed
 12. AIO updates Databricks dashboards
 
@@ -243,7 +243,7 @@ nm204 ←── nm218 ←── nm208
 |---|---|---|
 | **AIO** | 佐藤 Shinjiro（Shinn） | 依頼仕様チェック、フィルター仕様決め、AIO SBXマスタ更新（基本月1）、数値差分確認、ダッシュボード更新 |
 | **DKD** | 小林 | AnTARES フィルター作成、filtersetcode 発行、プロダクトグループ追加 |
-| **GATD → ECFD** | 大西 → Erin | 本番 TSV 更新、バリデーション、BQ ロード、パイプライン実行 |
+| **GATD/AMD** | 大西 | 本番 TSV 更新、バリデーション、BQ ロード、パイプライン実行 |
 
 ---
 
@@ -373,7 +373,7 @@ nm204 ←── nm218 ←── nm208
            → TRUNCATE → BQ LOAD → 行数チェック
 ```
 
-### Phase 3 — パイプライン再実行（GATD / ECFD）
+### Phase 3 — パイプライン再実行（GATD/AMD）
 
 9. brand_maint フローを手動トリガー：
    - `brand_maint_01` — 新規クライアント / ブランド定義変更（25ヶ月再集計）
@@ -382,7 +382,7 @@ nm204 ←── nm218 ←── nm208
 
 ### Phase 4 — QA・ダッシュボード更新
 
-10. GATD / ECFD が集計結果の品質チェック → AIO に報告
+10. GATD/AMD が集計結果の品質チェック → AIO に報告
 11. AIO が数値差分を確認、修正指示があれば対応
 12. AIO が Databricks ダッシュボードを更新
 
