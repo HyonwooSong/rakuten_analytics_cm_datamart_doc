@@ -25,7 +25,7 @@ Public reference documentation for the **RMPREP × CategoryMart (RA-CM)** migrat
 |---|---|---|
 | **AIO** | 佐藤 Shinjiro (Shinn) | Requirements, AIO SBX master authoring (monthly), numeric diff verification, dashboard update |
 | **DKD** | 小林 | AnTARES filter creation, filtersetcode issuance, Product Group additions (2–4 weeks) |
-| **GATD/AMD** | 大西 | Production TSV update, validation, BQ load, pipeline execution |
+| **TBD** | 大西 | Production TSV update, validation, BQ load, pipeline execution |
 
 ---
 

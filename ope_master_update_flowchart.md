@@ -34,7 +34,7 @@ flowchart TD
         PROD_TSV --> VALID
         VALID["バリデーション実行\nexe_nsl_ope_master_validation.sh\nFK整合性チェック全13マスタ"]
         VALID --> VALID_RESULT{全チェック PASS?\nAll checks passed?}
-        VALID_RESULT -->|❌ FAIL| FIX_TSV["TSV 修正\nFix TSV\n📌 AIO / GATD/AMD"]
+        VALID_RESULT -->|❌ FAIL| FIX_TSV["TSV 修正\nFix TSV\n📌 AIO / TBD"]
         FIX_TSV --> VALID
         VALID_RESULT -->|✅ PASS| BQ
         BQ["BQ ロード実行\nexe_load_nsl_hive_ope_master_data.sh\nTSV → GCS → TRUNCATE → LOAD → 行数検証"]
@@ -42,7 +42,7 @@ flowchart TD
 
     BQ --> MAINT_TYPE
 
-    subgraph P3["🔄 Phase 3 — パイプライン再実行  ／  GATD/AMD"]
+    subgraph P3["🔄 Phase 3 — パイプライン再実行  ／  TBD"]
         MAINT_TYPE{操作種別\nOperation type}
         MAINT_TYPE -->|新規クライアント\nブランド定義変更\nNew client / brand change| M01
         MAINT_TYPE -->|四半期フル再集計\nQuarterly full re-agg| M03
@@ -56,8 +56,8 @@ flowchart TD
 
     PIPE_DONE --> QA_CHECK
 
-    subgraph P4["✅ Phase 4 — QA・ダッシュボード更新  ／  GATD/AMD → AIO"]
-        QA_CHECK["集計結果品質チェック\nQuality check\n📌 GATD/AMD → AIO に報告"]
+    subgraph P4["✅ Phase 4 — QA・ダッシュボード更新  ／  TBD → AIO"]
+        QA_CHECK["集計結果品質チェック\nQuality check\n📌 TBD → AIO に報告"]
         QA_CHECK --> DIFF{数値差分あり?\nNumeric diff found?}
         DIFF -->|Yes| CORRECT["修正指示 & 対応\nCorrection\n📌 AIO（佐藤）\n→ Phase 2 へ戻る"]
         CORRECT --> PROD_TSV
@@ -88,7 +88,7 @@ sequenceDiagram
     actor Client as クライアント<br/>Client
     actor AIO as AIO（佐藤）<br/>Sato-san
     actor DKD as DKD（小林）<br/>Kobayashi-san
-    actor GATD as GATD/AMD
+    actor TBD as TBD
     participant SBX as SBX BQ<br/>spdb-sbx
     participant PROD as 本番 BQ<br/>Production BQ
     participant PIPE as Pipeline<br/>brand_maint

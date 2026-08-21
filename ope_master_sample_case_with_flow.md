@@ -63,11 +63,11 @@ flowchart TD
         VALID_OK -->|✅ PASS| BQ_LOAD["BQ ロード\nexe_load_nsl_hive_ope_master_data.sh"]
     end
 
-    subgraph PHASE3["🔄 Phase 3 — パイプライン実行  ／  GATD/AMD"]
+    subgraph PHASE3["🔄 Phase 3 — パイプライン実行  ／  TBD"]
         BQ_LOAD --> MAINT["brand_maint_01 実行\n新規クライアント → 25ヶ月再集計\nnt231/nm233/ns215/af021 再構築"]
     end
 
-    subgraph PHASE4["✅ Phase 4 — QA・ダッシュボード  ／  GATD/AMD → AIO"]
+    subgraph PHASE4["✅ Phase 4 — QA・ダッシュボード  ／  TBD → AIO"]
         MAINT --> QA["品質チェック・数値差分確認\nQuality check & numeric diff"]
         QA --> DB["Databricks ダッシュボード作成\nCreate P&G dashboards\n日用品:売上分析 / マーケットシェア 等"]
     end
