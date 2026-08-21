@@ -35,4 +35,3 @@ For **ope-master data update and maintenance** procedures, see the sister repo:
 | P&G New Client (CONRAT-44597) | https://jira.rakuten-it.com/jira/browse/CONRAT-44597 |
 | Item Brand Master (CONRAT-44598) | https://jira.rakuten-it.com/jira/browse/CONRAT-44598 |
 | Jira Epic | https://jira.rakuten-it.com/jira/browse/CONRAT-44285 |
-<!-- sync check Fri Aug 21 17:06:52 JST 2026 -->
