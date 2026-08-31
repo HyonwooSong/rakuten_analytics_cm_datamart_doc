@@ -40,6 +40,7 @@ v2 — ARリニューアル（CMベース）
 │   └── ペットライン Phase5 ── Open issue 対応　　　　　　　　⏳ 条件付き
 │   │
 │   └── DCR 対応 Part2 ── 新規クライアント（ペットライン・P&G 等）
+	└──	Supports AdminUI for clients' customized master data
 │
 └── 既存18社 CM移行　（Part2完了後に開始 · 別軸）　　　　　　⏳ 時期TBD
 ```
