@@ -34,13 +34,14 @@ v2 — ARリニューアル（CMベース）
 │   │
 │   └── DCR 対応 Part1 ── 新規クライアント（ペットライン・P&G 等）
 │
+│──Supports AdminUI for clients' customized master data
+│
 ├── Part 2：店舗商品ページ分析 / ブランドサイト分析　【RAT依存】
 │   │
 │   ├── ペットライン Phase4 ── 6 Dashboard（アクセス解析系）　　　　　⏳ 時期TBD
 │   └── ペットライン Phase5 ── Open issue 対応　　　　　　　　⏳ 条件付き
 │   │
 │   └── DCR 対応 Part2 ── 新規クライアント（ペットライン・P&G 等）
-	└──	Supports AdminUI for clients' customized master data
 │
 └── 既存18社 CM移行　（Part2完了後に開始 · 別軸）　　　　　　⏳ 時期TBD
 ```
@@ -300,6 +301,8 @@ Part2(RAT依存)                                │
  PL Phase5                                   │      ░░░░░
  DCR Part2                                   │░░░░░░░░░
                                              │
+
+
 18社CM移行                                    │
  （検討）                          　     ░░░░░│░░░░░  
  （開発）                                     │　    ░░░░░░░░░░ (Part2後)
