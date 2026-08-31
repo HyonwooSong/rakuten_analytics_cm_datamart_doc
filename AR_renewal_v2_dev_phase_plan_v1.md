@@ -29,12 +29,15 @@ v2 — ARリニューアル（CMベース）
 ├── Part 1：購買データ分析　【CM native】
 │   │
 │   ├── ペットライン Phase1 ── 6 Dashboard（CM native 対応可）　　　　🏁 2026-11-30
-│   ├── ペットライン Phase2 ── 5 Dashboard（対応困難・部分対応）　　　⏳ 時期TBD
-│   └── ペットライン Phase3 ── Open issue 対応（対象外軸）　　⏳ 条件付き
 │   │
 │   └── DCR 対応 Part1 ── 新規クライアント（ペットライン・P&G 等）
 │
-│──Supports AdminUI for clients' customized master data
+│── (Supports AdminUI for clients' customized master data)
+│
+├── (TBD on Part2's scope) Scoped Out of Part 1：購買データ分析　【CM native】
+│   │
+│   ├── ペットライン Phase2 ── 5 Dashboard（対応困難・部分対応）　　　⏳ 時期TBD
+│   └── ペットライン Phase3 ── Open issue 対応（対象外軸）　　⏳ 条件付き
 │
 ├── Part 2：店舗商品ページ分析 / ブランドサイト分析　【RAT依存】
 │   │
