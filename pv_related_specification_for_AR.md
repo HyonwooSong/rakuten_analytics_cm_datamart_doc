@@ -85,3 +85,9 @@ Extra filter unique to this dashboard: **`:source_filter` → `traffic_source_na
 The URL-level equivalent of `item_pv_overview` — free-form cross-analysis with two selectable axes. The key distinction is that **`URL` itself is a breakdown axis** here (`page_class_name`), letting analysts compare engagement across different pages within the brand site in a single view.
 
 Metrics extend beyond simple PV/UU to include session count, average dwell time, and exit rate per breakdown combination — enabling segment-level engagement quality analysis (e.g. "which age group stays longest on the campaign page?").
+
+---
+
+## Potential reference for pv related data
+
+![mdid_mart tables](mdid_mart_tables.png)
