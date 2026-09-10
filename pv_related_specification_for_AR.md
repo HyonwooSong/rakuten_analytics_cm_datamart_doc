@@ -1,7 +1,6 @@
-# PV-Related Dashboards — Conceptual Spec (RAT Data Perspective)
+# PV-Related Dashboards — Conceptual Spec (about item_pv/url_pv)
 
 ---
-
 ##  Core concepts behind  item_pv
 
 | Concept                  | What it means                                                            | RAT field                                         |
