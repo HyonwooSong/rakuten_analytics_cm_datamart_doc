@@ -1,7 +1,7 @@
 # PV-Related Dashboards — Conceptual Spec (about item_pv/url_pv)
 
 ---
-##  Core concepts behind  item_pv
+##  1. Core concepts behind  item_pv
 
 | Concept                  | What it means                                                            | RAT field                                         |
 | ------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------- |
@@ -54,7 +54,7 @@ Two complementary views:
 
 This is the most brand-strategy-oriented of the four: it surfaces vocabulary gaps between how the brand describes its products and how users actually search.
 
-##  Core concepts behind url_pv
+##  2. Core concepts behind url_pv
 
 While `v_url_pv` covers **specific URLs registered by the client** — typically brand microsites, campaign landing pages, or official brand pages hosted within the Rakuten ecosystem.
 
@@ -68,7 +68,7 @@ While `v_url_pv` covers **specific URLs registered by the client** — typically
 
 
 ## The two analytics on url_pv
-### `url_pv_access_list` — アクセス状況一覧表
+### 1.`url_pv_access_list` — アクセス状況一覧表
 > **"How did my brand site URLs perform over time, and are users actually engaging once they arrive?"**
 
 A time-series list view per URL. Unlike `item_pv_daily_access` which measures reach (how many came), this dashboard adds **engagement depth**: how long users stayed (`平均滞在時間`) and how many left immediately (`離脱率`). A brand can distinguish between URLs that attract traffic but fail to hold attention vs. those with genuine engagement.
@@ -79,15 +79,9 @@ Extra filter unique to this dashboard: **`:source_filter` → `traffic_source_na
 
 ---
 
-### `url_pv_brand_site` — ブランドサイト分析
+### 2.`url_pv_brand_site` — ブランドサイト分析
 > **"How do brand site metrics break down across any two dimensions I choose?"**
 
 The URL-level equivalent of `item_pv_overview` — free-form cross-analysis with two selectable axes. The key distinction is that **`URL` itself is a breakdown axis** here (`page_class_name`), letting analysts compare engagement across different pages within the brand site in a single view.
 
 Metrics extend beyond simple PV/UU to include session count, average dwell time, and exit rate per breakdown combination — enabling segment-level engagement quality analysis (e.g. "which age group stays longest on the campaign page?").
-
----
-
-## Potential reference for pv related data
-
-![mdid_mart tables](mdid_mart_tables.png)
